@@ -143,5 +143,13 @@ public class Book {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	/**
+     * @return a review
+     */
+	public Review getoneReview(int id) {
+		return this.reviews.get(id);
+	}
+
 
 }

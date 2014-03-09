@@ -1,12 +1,17 @@
 package edu.sjsu.cmpe.library.domain;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-@JsonPropertyOrder({ "id" , "rating" , "comment"})
-public class Review {
+
+import edu.sjsu.cmpe.library.dto.LinksDto;
+
+public class Review extends LinksDto {
+
 	private long id;
-	@NotEmpty
+	@NotNull
 	private int rating;
 	@NotEmpty
 	private String comment;

@@ -24,6 +24,7 @@ import edu.sjsu.cmpe.library.dto.BookDto;
 import edu.sjsu.cmpe.library.dto.LinkDto;
 import edu.sjsu.cmpe.library.dto.LinksDto;
 import edu.sjsu.cmpe.library.dto.ReviewDto;
+import edu.sjsu.cmpe.library.dto.ReviewsDto;
 import edu.sjsu.cmpe.library.repository.BookRepositoryInterface;
 
 @Path("/v1/books")
@@ -122,10 +123,39 @@ public class BookResource {
 		retrieveBook.getReviews().add(reviews);
 		review_id++;
 
+		ReviewDto reviewResponse = new ReviewDto();
+		reviewResponse.addLink(new LinkDto("view-review", "/books/" + retrieveBook.getIsbn() + "/reviews/" + reviews.getId(), "GET"));
+
+	return Response.status(201).entity(reviewResponse.getLinks()).build();
+    }
+    
+    @GET
+    @Path("/{isbn}/reviews/{id}")
+    @Timed(name = "view-review")
+    public Response viewReview(@PathParam("isbn") long isbn, @PathParam("id") long id) {
+		int i=0;
+		Book retrieveBook = bookRepository.getBookByISBN(isbn);
+
+		while (retrieveBook.getoneReview(i).getId()!=id)
+		{
+			i++;
+		}
+
+		ReviewDto reviewResponse = new ReviewDto(retrieveBook.getoneReview(i));
 		LinksDto links = new LinksDto();
-    	links.addLink(new LinkDto("view-review", "/books/" + retrieveBook.getIsbn() + "/reviews/" + reviews.getId(), "GET"));
-    	
-	return Response.status(201).entity(links).build();
+    	links.addLink(new LinkDto("view-review", "/books/" + retrieveBook.getIsbn() + "/reviews/" + retrieveBook.getoneReview(i).getId(), "GET"));
+    	return Response.ok(links).build();
+    }
+
+    @GET
+    @Path("/{isbn}/reviews")
+    @Timed(name = "view-all-reviews")
+    public ReviewsDto viewAllReviews(@PathParam("isbn") long isbn) {
+
+		Book retrieveBook = bookRepository.getBookByISBN(isbn);
+		ReviewsDto reviewResponse = new ReviewsDto(retrieveBook.getReviews());
+
+	return reviewResponse;
     }
 
     
