@@ -35,7 +35,6 @@ import edu.sjsu.cmpe.library.repository.BookRepositoryInterface;
 public class BookResource {
     /** bookRepository instance */
     private final BookRepositoryInterface bookRepository;
-    private static int author_id = 1;
 	private static long review_id = 1;
     /**
      * BookResource constructor
@@ -64,9 +63,10 @@ public class BookResource {
 
     @POST
     @Timed(name = "create-book")
-    public Response createBook(Book request) {
+    public Response createBook(@Valid Book request) {
 	// Store the new book in the BookRepository so that we can retrieve it.
-	Book savedBook = bookRepository.saveBook(request);
+    	int author_id = 1;
+    	Book savedBook = bookRepository.saveBook(request);
 	
 	for (int author=0;author<savedBook.getAuthors().length;author++)
 	{
@@ -103,7 +103,7 @@ public class BookResource {
     @PUT
     @Path ("/{isbn}")
     @Timed(name = "update-book")
-    public Response updateBook(@PathParam("isbn") long isbn, @QueryParam("status") String newStatus, Book request) {
+    public Response updateBook(@PathParam("isbn") long isbn, @QueryParam("status") String newStatus, @Valid Book request) {
     	Book repoBook = bookRepository.getBookByISBN(isbn);
     	Book updatedBook = new Book();
     	if(repoBook.getIsbn() == isbn)
