@@ -4,13 +4,13 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class Author {
 	
-	private long id;
+	public int id;
 	@NotEmpty
 	private String name;
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 	/**
@@ -28,7 +28,7 @@ public class Author {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

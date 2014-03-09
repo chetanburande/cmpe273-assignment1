@@ -144,6 +144,7 @@ public class Book {
 		this.status = status;
 	}
 	
+	
 	/**
      * @return a review
      */
@@ -151,5 +152,11 @@ public class Book {
 		return this.reviews.get(id);
 	}
 
+	/**
+     * @return on author
+     */
+	public Author getoneAuthor(int id) {
+		return this.authors[id];	
+	}
 
 }

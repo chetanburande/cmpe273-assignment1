@@ -20,6 +20,8 @@ import com.yammer.metrics.annotation.Timed;
 
 import edu.sjsu.cmpe.library.domain.Book;
 import edu.sjsu.cmpe.library.domain.Review;
+import edu.sjsu.cmpe.library.dto.AuthorDto;
+import edu.sjsu.cmpe.library.dto.AuthorsDto;
 import edu.sjsu.cmpe.library.dto.BookDto;
 import edu.sjsu.cmpe.library.dto.LinkDto;
 import edu.sjsu.cmpe.library.dto.LinksDto;
@@ -33,7 +35,7 @@ import edu.sjsu.cmpe.library.repository.BookRepositoryInterface;
 public class BookResource {
     /** bookRepository instance */
     private final BookRepositoryInterface bookRepository;
-    private static long author_id = 1;
+    private static int author_id = 1;
 	private static long review_id = 1;
     /**
      * BookResource constructor
@@ -65,6 +67,13 @@ public class BookResource {
     public Response createBook(Book request) {
 	// Store the new book in the BookRepository so that we can retrieve it.
 	Book savedBook = bookRepository.saveBook(request);
+	
+	for (int author=0;author<savedBook.getAuthors().length;author++)
+	{
+		savedBook.getAuthors()[author].id = author_id;
+		author_id++;
+
+	}
 
 	String location = "/books/" + savedBook.getIsbn();
 	BookDto bookResponse = new BookDto(savedBook);
@@ -156,6 +165,34 @@ public class BookResource {
 		ReviewsDto reviewResponse = new ReviewsDto(retrieveBook.getReviews());
 
 	return reviewResponse;
+    }
+    
+    @GET
+    @Path("/{isbn}/authors/{id}")
+    @Timed(name = "view-author")
+    public Response viewAuthor(@PathParam("isbn") long isbn, @PathParam("id") long id) {
+		int i=0;
+		Book retrieveBook = bookRepository.getBookByISBN(isbn);
+		
+		while (retrieveBook.getoneAuthor(i).getId()!=id)
+		{
+			i++;
+		}
+		AuthorDto authorResponse = new AuthorDto(retrieveBook.getoneAuthor(i));
+		authorResponse.addLink(new LinkDto("view-author", "/books/" + retrieveBook.getIsbn() + "/authors/" + retrieveBook.getoneAuthor(i).getId(), "GET"));
+
+	return Response.ok(authorResponse).build();
+    }
+    
+    @GET
+    @Path("/{isbn}/authors")
+    @Timed(name = "view-all-authors")
+    public AuthorsDto viewAllAuthors(@PathParam("isbn") long isbn) {
+
+		Book retrieveBook = bookRepository.getBookByISBN(isbn);
+		AuthorsDto authorResponse = new AuthorsDto(retrieveBook.getAuthors());
+
+	return authorResponse;
     }
 
     
